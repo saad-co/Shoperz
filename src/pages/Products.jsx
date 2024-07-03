@@ -1,15 +1,19 @@
-import React, { useState, Suspense, memo } from "react";
+import React, { useState, Suspense, memo, useEffect } from "react";
 import { useLoaderData, defer, Await, Link, NavLink, useSearchParams } from "react-router-dom";
 import { FeauteredProducts } from "../api";
 
 function Products() {
     const loadedDataPromise = useLoaderData();
     const [searchparam, setSearchparam] = useSearchParams();
-    // console.log("in products testing params", searchparam);
+    const PriceFilterArr = searchparam.get('price') ? searchparam.get('price').split(',') : [];
+    const BrandFilterArr = searchparam.get('brand') ? searchparam.get('brand').split(',') : [];
+
+    console.log("checking search param", searchparam.toString());
 
 
     const [isActive, setIsActive] = useState(true);
     const [isSecActive, setIsSecActive] = useState(false);
+
 
     function toggleFirst() {
         if (isActive) {
@@ -90,11 +94,11 @@ function Products() {
                             {/* console.log("RealData", RealData); */ }
                             return (
                                 <div className={`grid ${isActive ? "lg:grid-cols-3 xs:grid-cols-2" : "grid-cols-1"}  gap-2 xs:h-full`}>
-                                    {RealData.map((item) => {
+                                    {RealData.filter(item => { let minPrice = 0; let maxPrice = Number.MAX_SAFE_INTEGER; if (PriceFilterArr.length === 1) { maxPrice = parseInt(PriceFilterArr[PriceFilterArr.length - 1]) } else if (PriceFilterArr.length > 1) { minPrice = parseInt(PriceFilterArr[0]); maxPrice = parseInt(PriceFilterArr[PriceFilterArr.length - 1]) } return item.ProductPrice >= minPrice && item.ProductPrice <= maxPrice && (BrandFilterArr.length > 0 ? BrandFilterArr.includes(item.ProductCompany.toLowerCase()) : true) }).map((item) => {
                                         return (
                                             <div className={`p-4 xs:p-2 border-2 h-full border-gray rounded-lg justify-center ${isActive ? "flex-col" : "flex"}`} key={item.id}>
                                                 {
-                                                    isActive ? (<Link to={item.id}>
+                                                    isActive ? (<Link to={item.id} state={{ queryParam: `?${searchparam.toString()}` }}>
                                                         <h1 className="text-blue-400 text-lg h-20 xs:h-30 xs:font-bold xs:text-sm">{item.ProductName}</h1>
                                                         <img src={item.ProductImageUrl} alt={item.ProductName} />
                                                         <div className="flex xs:flex-col items-center justify-between lg:mt-2 xs:mt-0 xs:items-start xs:gap-2">
@@ -231,8 +235,7 @@ function MobileSideMenu({ paramfunction, param }) {
     const [openMenu, setOpenMenu] = useState(false);
     const [secMenu, setSecMenu] = useState(false);
     const [thirdMenu, setThirdMenu] = useState(false);
-
-    const [filter, setFilter] = useState({ price: "" });
+    const [filter, setFilter] = useState({ price: param.get('price') ? param.get('price').split(",") : [], brand: param.get('brand') ? param.get('brand').split(",") : [] });
 
     function toggle() {
         setOpenMenu(!openMenu);
@@ -246,25 +249,52 @@ function MobileSideMenu({ paramfunction, param }) {
         setThirdMenu(!thirdMenu)
     }
 
+    useEffect(() => {
+        const sp = new URLSearchParams(param);
+
+        if (filter.price.length > 0) {
+            sp.set('price', filter.price.join(','));
+        } else {
+            sp.delete('price');
+        }
+        if (filter.brand.length > 0) {
+            sp.set('brand', filter.brand.join(','));
+        } else {
+            sp.delete('brand');
+        }
+        paramfunction(sp);
+    }, [filter]);
+
+
+
     function handleFilter(firtKey, secValue) {
         const newFilter = { ...filter };
-        if (newFilter[firtKey] === secValue) {
-            newFilter[firtKey] = "";
-        }
-        else {
-            newFilter[firtKey] = secValue;
+        const pricearr = secValue.split(",");
+        let flag = false;
+        pricearr.forEach(price => {
+            if (newFilter.price.includes(price)) {
+                newFilter.price = newFilter.price.filter(value => value !== price);
+                flag = true;
+            }
+        });
+        if (!flag) {
+            newFilter.price = [...newFilter.price, ...pricearr];
         }
         setFilter(newFilter);
     }
 
-    console.log("filter", filter)
 
-    const isChecked = () => {
-        if (filter.price) {
-            const arr = filter.price.split(",");
-
+    function handleBrandFilter(brandName) {
+        const newFilter = { ...filter };
+        if (newFilter.brand.includes(brandName)) {
+            newFilter.brand = newFilter.brand.filter(value => value !== brandName);
+        } else {
+            newFilter.brand = [...newFilter.brand, brandName];
         }
+        setFilter(newFilter);
     }
+
+
 
 
     return (
@@ -294,30 +324,42 @@ function MobileSideMenu({ paramfunction, param }) {
                     <div className="flex flex-col">
                         <ul className="overflow-hidden">
                             <li className="flex items-center gap-2">
-                                <input className="h-5 w-5" type="checkbox" />
+                                <button onClick={() => handleBrandFilter("apple")}>
+                                    <input className="h-5 w-5" type="checkbox" checked={filter.brand.includes("apple")} />
+                                </button>
                                 <p>Apple (32)</p>
                             </li>
                             <li className="flex items-center gap-2">
-                                <input className="h-5 w-5" type="checkbox" />
+                                <button onClick={() => handleBrandFilter("hp")}>
+                                    <input className="h-5 w-5" type="checkbox" checked={filter.brand.includes("hp")} />
+                                </button>
                                 <p>HP (64)</p>
                             </li>
                             <li className="flex items-center gap-2">
-                                <input className="h-5 w-5" type="checkbox" />
+                                <button onClick={() => handleBrandFilter("dell")}>
+                                    <input className="h-5 w-5" type="checkbox" checked={filter.brand.includes("dell")} />
+                                </button>
                                 <p>DELL (21)</p>
                             </li>
                         </ul>
                         <div className={`grid transition-all duration-500 ease-out ${!secMenu ? "grid-rows-[0fr]" : "grid-rows-[1fr]"} `}>
                             <ul className="inner overflow-hidden">
                                 <li className="flex items-center gap-2">
-                                    <input className="h-5 w-5" type="checkbox" />
+                                    <button onClick={() => handleBrandFilter("sony")}>
+                                        <input className="h-5 w-5" type="checkbox" checked={filter.brand.includes("sony")} />
+                                    </button>
                                     <p>Sony (32)</p>
                                 </li>
                                 <li className="flex items-center gap-2">
-                                    <input className="h-5 w-5" type="checkbox" />
+                                    <button onClick={() => handleBrandFilter("lenovo")}>
+                                        <input className="h-5 w-5" type="checkbox" checked={filter.brand.includes("lenovo")} />
+                                    </button>
                                     <p>Lenovo (64)</p>
                                 </li>
                                 <li className="flex items-center gap-2">
-                                    <input className="h-5 w-5" type="checkbox" />
+                                    <button onClick={() => handleBrandFilter("toshiba")}>
+                                        <input className="h-5 w-5" type="checkbox" checked={filter.brand.includes("toshiba")} />
+                                    </button>
                                     <p>Toshiba (21)</p>
                                 </li>
 
@@ -337,34 +379,34 @@ function MobileSideMenu({ paramfunction, param }) {
                         <ul className="overflow-hidden">
                             <li className="flex items-center gap-2">
                                 <button onClick={() => handleFilter("price", "50")}>
-                                    <input className="h-5 w-5" type="checkbox" checked={filter.price === '50'} />
+                                    <input className="h-5 w-5" type="checkbox" checked={filter.price.includes("50")} />
                                 </button>
                                 <p>&gt;50 (32)</p>
                             </li>
                             <li className="flex items-center gap-2">
                                 <button onClick={() => handleFilter("price", "100,200")}>
-                                    <input className="h-5 w-5" type="checkbox" checked={filter.price.split(",").some(price => Number(price) >= 100 && Number(price) <= 200)} />
+                                    <input className="h-5 w-5" type="checkbox" checked={filter.price.includes("100")} />
                                 </button>
                                 <p>100-200 (64)</p>
                             </li>
                             <li className="flex items-center gap-2">
-                                <button onClick={() => handleFilter("price", "200,300")}>
-                                    <input className="h-5 w-5" type="checkbox" checked={filter.price.split(",").some(price => Number(price) >= 200 && Number(price) <= 300)} />
+                                <button onClick={() => handleFilter("price", "201,300")}>
+                                    <input className="h-5 w-5" type="checkbox" checked={filter.price.includes("201")} />
                                 </button>
-                                <p>201-300 (21)</p>
+                                <p>200-300 (21)</p>
                             </li>
                         </ul>
                         <div className={`grid transition-all duration-500 ease-out ${!thirdMenu ? "grid-rows-[0fr]" : "grid-rows-[1fr]"} `}>
                             <ul className="inner overflow-hidden">
                                 <li className="flex items-center gap-2">
                                     <button onClick={() => handleFilter("price", "400,500")}>
-                                        <input className="h-5 w-5" type="checkbox" checked={filter.price.split(",").some(price => Number(price) >= 400)} />
+                                        <input className="h-5 w-5" type="checkbox" checked={filter.price.includes("400")} />
                                     </button>
                                     <p>400-500 (32)</p>
                                 </li>
                                 <li className="flex items-center gap-2">
                                     <button onClick={() => handleFilter("price", "500,1000")}>
-                                        <input className="h-5 w-5" type="checkbox" checked={filter.price.split(",").some(price => Number(price) >= 500)} />
+                                        <input className="h-5 w-5" type="checkbox" checked={filter.price.includes("1000")} />
                                     </button>
                                     <p>500-1000 (64)</p>
                                 </li>

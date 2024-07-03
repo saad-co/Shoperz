@@ -1,15 +1,8 @@
 import React, { Suspense, useRef, useState } from "react";
-import { useLoaderData, defer, Await } from "react-router-dom";
+import { useLoaderData, defer, Await, useLocation, Link } from "react-router-dom";
 import { GetProductById } from "../api";
 import ProdPic from ".././assets/image2.png";
 import ProdPic2 from ".././assets/image3.png";
-import BigDeals from "../components/Crousels/BigDealsCrousel";
-
-
-// export async function loader({ params }) {
-//     const DataPromise = GetProductById(params.id);
-//     return defer({ Data: DataPromise });
-// }
 
 export async function loader({ params }) {
     const productId = params.id;
@@ -44,6 +37,11 @@ export default function () {
     const LoadedDataPromise = useLoaderData();
     const [counter, setCounter] = useState(1);
     const sliderRef = useRef(null);
+    const location = useLocation();
+    // console.log("checking location:", location);
+
+    const search = location.state?.queryParam || "";
+    console.log("checking search:", search);
 
     function Plus() {
         setCounter(counter + 1);
@@ -57,6 +55,7 @@ export default function () {
 
     return (
         <section className="w-full xs:flex xs:flex-col xs:items-start xs:justify-center">
+            <Link to={`..${search}`} relative="path"></Link>
             <Suspense fallback={<div className="text-5xl font-bold m-auto w-full text-center">Loading...</div>}>
                 <Await resolve={LoadedDataPromise.Data}>
                     {

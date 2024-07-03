@@ -5,6 +5,7 @@ import Home from "./pages/Home";
 import { loader as FeateredDataloader } from "./components/Crousels/FeauteredProductsCrousel";
 import Products, { loader as ProductsLoader } from "./pages/Products";
 import ProductDetail, { loader as PordDetailLoader } from "./pages/ProductDetail";
+import Login from "./pages/Login";
 
 function App() {
   const router = createBrowserRouter(
@@ -27,6 +28,10 @@ function App() {
           path="products/:id"
           element={<ProductDetail />}
           loader={PordDetailLoader}
+        />
+        <Route
+          path="login"
+          element={<Login />}
         />
       </Route>
     )
