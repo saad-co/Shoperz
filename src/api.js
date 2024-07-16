@@ -20,10 +20,8 @@ export async function GetProductById(id) {
         const docSnapshot = await getDoc(productRef);
 
         if (docSnapshot.exists()) {
-            // console.log("Document data:", docSnapshot.data());
             return docSnapshot.data();
         } else {
-            console.log("No such document!");
             return null;
         }
     } catch (e) {
