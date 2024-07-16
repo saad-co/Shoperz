@@ -4,8 +4,6 @@ import { FcGoogle } from "react-icons/fc";
 import { Form, Link, redirect, useActionData, useNavigate } from "react-router-dom";
 import { getAuth, createUserWithEmailAndPassword, GoogleAuthProvider, signInWithPopup } from "firebase/auth";
 import { app } from "../firebaseConfig";
-
-
 const provider = new GoogleAuthProvider();
 const signupWithGoogle = async (navigate) => {
     try {
@@ -23,9 +21,6 @@ const signupWithGoogle = async (navigate) => {
         };
     }
 }
-
-
-
 export async function action({ request }) {
     const formData = await request.formData();
     const email = formData.get("email");
@@ -58,8 +53,6 @@ export async function action({ request }) {
         }
     }
 }
-
-
 export default function SignUp() {
     const actionData = useActionData();
     const [error, setError] = React.useState(null);
@@ -79,9 +72,7 @@ export default function SignUp() {
                 <div className="w-full">
                     <Form className="flex flex-col justify-center items-center gap-4 w-full" method="post">
                         <input className="p-3 w-full rounded-lg border border-black" type="email" name="email" placeholder="Email" />
-
                         <input className="p-3 w-full rounded-lg border border-black" type="password" name="password" placeholder="Password" />
-
                         <input className="p-3 w-full rounded-lg border border-black" type="password" name="confirm-password" placeholder="Confirm Password" />
                         {actionData && actionData.error && <div style={{ color: 'red' }}>{actionData.error}</div>}
                         {error && <div style={{ color: 'red' }}>{error}</div>}
@@ -89,7 +80,6 @@ export default function SignUp() {
                         <p>Already have an account?<Link className="text-blue-600" to={"/login"}>Login</Link></p>
                     </Form>
                 </div>
-
                 <div className="w-full flex flex-col gap-4">
                     <button onClick={handleSubmit} className="p-2 w-full bg-white-500 rounded-lg border border-black text-white flex gap-x-28 items-center pl-10"> <FcGoogle className="text-2xl" /> <p className="text-black">Signup with Google</p></button>
                     <button className="p-2 w-full bg-blue-500 rounded-lg text-white flex gap-x-28 items-center pl-10"><ImFacebook2 className="text-2xl" /> <p>Signup with Facebook</p></button>
