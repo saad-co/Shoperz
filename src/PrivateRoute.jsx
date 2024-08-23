@@ -15,7 +15,11 @@ const PrivateRoute = ({ children }) => {
 
     // Handle loading state
     if (loading) {
-        return <div className='text-center text-4xl font-bold m-10'>Loading...</div>;
+        return (
+            <div className="flex justify-center items-center h-screen">
+                <div className="text-4xl font-bold">Loading...</div>
+            </div>
+        );
     }
 
     return user ? children : <Navigate to={`/login?message=You must log in first&&redirectTo=${pathname}`} />;

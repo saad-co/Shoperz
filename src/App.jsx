@@ -10,57 +10,86 @@ import Login, { action as LoginAction, loader as LoginLoader } from "./pages/Log
 import ContactUs from "./pages/ContactUs";
 import PrivateRoute, { loader as privateLoader } from "./PrivateRoute";
 import ResetPassword, { action as ResetAction } from "./pages/ResetPassword";
+import NotFound from "./pages/404";
+import HostLayout from "./components/Layout/HostLayout";
+import CreateProduct, { action as ProductAdditionAction } from "./pages/Admin/CreateProduct";
+import AdminHome from "./pages/Admin/AdminHome";
+
 
 function App() {
   const router = createBrowserRouter(
     createRoutesFromElements(
-      <Route
-        path="/"
-        element={<Layout />}
-      >
+      <>
         <Route
-          index
-          element={<Home />}
-          loader={FeateredDataloader}
-        />
-        <Route
-          path="products"
-          element={<Products />}
-          loader={ProductsLoader}
-        />
-        <Route
-          path="products/:id"
-          element={<ProductDetail />}
-          loader={PordDetailLoader}
-        />
-        <Route
-          path="signup"
-          element={<SignUp />}
-          action={singupAction}
-        />
-        <Route
-          path="login"
-          element={<Login />}
-          action={LoginAction}
-          loader={LoginLoader}
-        />
-        <Route
-          path="forgetpassword"
-          element={<ResetPassword />}
-          action={ResetAction}
-        />
-        {/* Protected Routes */}
-        <Route
-          path="contact"
+          path="/admin"
           element={
-            <PrivateRoute
-            >
-              <ContactUs />
+            <PrivateRoute>
+              <AdminHome />
             </PrivateRoute>
           }
           loader={privateLoader}
+        >
+          <Route
+            path="create-product"
+            element={
+              <CreateProduct />
+            }
+            action={ProductAdditionAction}
+          />
+        </Route>
+
+        <Route
+          path="/"
+          element={<Layout />}
+        >
+          <Route
+            index
+            element={<Home />}
+            loader={FeateredDataloader}
+          />
+          <Route
+            path="products"
+            element={<Products />}
+            loader={ProductsLoader}
+          />
+          <Route
+            path="products/:id"
+            element={<ProductDetail />}
+            loader={PordDetailLoader}
+          />
+          <Route
+            path="signup"
+            element={<SignUp />}
+            action={singupAction}
+          />
+          <Route
+            path="login"
+            element={<Login />}
+            action={LoginAction}
+            loader={LoginLoader}
+          />
+          <Route
+            path="forgetpassword"
+            element={<ResetPassword />}
+            action={ResetAction}
+          />
+          {/* Protected Routes */}
+          <Route
+            path="contact"
+            element={
+              <PrivateRoute>
+                <ContactUs />
+              </PrivateRoute>
+            }
+            loader={privateLoader}
+          />
+        </Route>
+
+        <Route
+          path="*"
+          element={<NotFound />}
         />
-      </Route>
+      </>
     )
   );
 

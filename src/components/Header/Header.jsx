@@ -3,6 +3,7 @@ import MobileSideMenu from './MobileSideMenu';
 import { NavLink } from 'react-router-dom';
 import { auth } from '../../firebaseConfig';
 import { signOut } from 'firebase/auth';
+// import Logo from '../../../public/Logo3.svg';
 
 export default function Header() {
 
@@ -246,6 +247,7 @@ export default function Header() {
                             <path d="M141.748 18.8235C140.449 18.8235 139.395 17.7701 139.395 16.4706C139.395 15.1711 140.449 14.1176 141.748 14.1176H146.454C147.754 14.1176 148.807 15.1711 148.807 16.4706C148.807 17.7701 147.754 18.8235 146.454 18.8235H141.748Z" fill="#E4B200" />
                             <path d="M140.655 11.4793C139.736 12.3982 138.246 12.3982 137.327 11.4793C136.408 10.5604 136.408 9.07063 137.327 8.15175L140.655 4.82419C141.574 3.90531 143.063 3.90531 143.982 4.82419C144.901 5.74307 144.901 7.23287 143.982 8.15175L140.655 11.4793Z" fill="#E4B200" />
                         </svg>
+                        {/* <img height={40} width={80} src={Logo} alt="logo" srcset="" /> */}
                     </NavLink>
                     <div className='flex items-center gap-3 justify-around w-full'>
                         <div className='flex items-center gap-2'>

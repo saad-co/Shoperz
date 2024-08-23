@@ -12,7 +12,7 @@ export async function loader() {
     const cachedData = localStorage.getItem('featuredProducts');
     const dataAge = localStorage.getItem('featuredProductsTimestamp');
     const cacheDuration = 24 * 60 * 60 * 1000;
-    if (cachedData && (Date.now() - dataAge) < cacheDuration) {
+    if (cachedData) {
         return defer({
             products: Promise.resolve(JSON.parse(cachedData))
         });
@@ -27,8 +27,6 @@ export async function loader() {
 }
 
 export default function FeauteredProductsCrousel({ data }) {
-
-
     const sliderRef = useRef(null);
 
     const goToNext = () => {
@@ -80,7 +78,7 @@ export default function FeauteredProductsCrousel({ data }) {
                             (RealData) => {
                                 return <Slider ref={sliderRef} {...settings}>
                                     {
-                                        RealData.map((product,index) => {
+                                        RealData.map((product, index) => {
                                             return (
                                                 <NavLink key={index} to={`products/${product.id}`}>
                                                     <div className="items-center justify-center border-2 border-text-black-50 h-full p-5 mr-4">
