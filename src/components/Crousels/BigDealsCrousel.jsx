@@ -9,8 +9,6 @@ export function loader() {
 }
 
 export default function BigDeals({ data }) {
-
-
     const sliderRef = useRef(null);
 
     const goToNext = () => {

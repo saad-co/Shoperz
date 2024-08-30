@@ -8,8 +8,6 @@ function Products() {
     const PriceFilterArr = searchparam.get('price') ? searchparam.get('price').split(',') : [];
     const BrandFilterArr = searchparam.get('brand') ? searchparam.get('brand').split(',') : [];
 
-
-
     const [isActive, setIsActive] = useState(true);
     const [isSecActive, setIsSecActive] = useState(false);
 
@@ -422,7 +420,4 @@ function MobileSideMenu({ paramfunction, param }) {
         </div>
     );
 }
-
-
-
 export default memo(Products);

@@ -11,9 +11,10 @@ import ContactUs from "./pages/ContactUs";
 import PrivateRoute, { loader as privateLoader } from "./PrivateRoute";
 import ResetPassword, { action as ResetAction } from "./pages/ResetPassword";
 import NotFound from "./pages/404";
-import HostLayout from "./components/Layout/HostLayout";
 import CreateProduct, { action as ProductAdditionAction } from "./pages/Admin/CreateProduct";
 import AdminHome from "./pages/Admin/AdminHome";
+import AdminProducts from "./pages/Admin/AdminProducts";
+import EditProduct from "./pages/Admin/EditProducts";
 
 
 function App() {
@@ -29,15 +30,35 @@ function App() {
           }
           loader={privateLoader}
         >
-          <Route
-            path="create-product"
-            element={
-              <CreateProduct />
-            }
-            action={ProductAdditionAction}
-          />
         </Route>
-
+        <Route
+          path="/admin/adminproducts"
+          element={
+            <PrivateRoute>
+              <AdminProducts />
+            </PrivateRoute>
+          }
+        >
+        </Route>
+        <Route
+          path="/admin/editproduct/:id"
+          element={
+            <PrivateRoute>
+              <EditProduct />
+            </PrivateRoute>
+          }
+        >
+        </Route>
+        <Route
+          path="/admin/createProduct"
+          element={
+            <PrivateRoute>
+              <CreateProduct />
+            </PrivateRoute>
+          }
+          action={ProductAdditionAction}
+        >
+        </Route>
         <Route
           path="/"
           element={<Layout />}

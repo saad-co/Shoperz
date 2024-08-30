@@ -13,6 +13,17 @@ export async function FeauteredProducts() {
         throw new Error("Failed to fetch featured products");
     }
 }
+export async function ProductsToDisplay() {
+    try {
+        const productCollection = collection(db, "products");
+        const snapshot = await getDocs(productCollection);
+        const products = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        return products;
+    } catch (error) {
+        console.error("Error fetching data from Firestore:", error);
+        throw new Error("Failed to fetch featured products");
+    }
+}
 
 export async function GetProductById(id) {
     try {
