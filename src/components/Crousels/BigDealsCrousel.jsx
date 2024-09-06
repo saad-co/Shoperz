@@ -64,12 +64,12 @@ export default function BigDeals({ data }) {
                                                 return (
                                                     <NavLink key={index} to={`products/${product.id}`}>
                                                         <div className="items-center justify-center border-2 border-text-black-50 h-full p-5 mr-4">
-                                                            <h2 className="text-sm">{product.ProductCompany}</h2>
-                                                            <p className="text-lg h-20 text-blue-800 font-bold">{product.ProductName}</p>
-                                                            <img src={product.ProductImageUrl} alt="" srcSet="" height="10rem" />
+                                                            <h2 className="text-sm">{product.type}</h2>
+                                                            <p className="text-lg h-20 text-blue-800 font-bold">{product.name}</p>
+                                                            <img src={product.imageUrl} alt="" srcSet="" height="10rem" />
                                                             <div className="flex justify-between items-center">
                                                                 <div>
-                                                                    <p className="font-bold text-lg text-red-500">${product.ProductPrice}</p>
+                                                                    <p className="font-bold text-lg text-red-500">${product.price}</p>
                                                                     <p className="text-sm line-through">$920.00</p>
                                                                 </div>
                                                                 <svg width="36" height="36" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">

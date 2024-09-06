@@ -1,4 +1,4 @@
-import { FeauteredProducts } from "../../api";
+import { ProductsToDisplay } from "../../api";
 import React, { useRef, Suspense } from "react";
 import { defer, Await, NavLink } from "react-router-dom";
 import Slider from "react-slick";
@@ -9,21 +9,21 @@ import Slider from "react-slick";
 // }
 
 export async function loader() {
-    const cachedData = localStorage.getItem('featuredProducts');
-    const dataAge = localStorage.getItem('featuredProductsTimestamp');
-    const cacheDuration = 24 * 60 * 60 * 1000;
-    if (cachedData) {
-        return defer({
-            products: Promise.resolve(JSON.parse(cachedData))
-        });
-    } else {
-        const DataPromise = FeauteredProducts().then(data => {
+    // const cachedData = localStorage.getItem('featuredProducts');
+    // const dataAge = localStorage.getItem('featuredProductsTimestamp');
+    // const cacheDuration = 24 * 60;
+    // if (cachedData) {
+    //     return defer({
+    //         products: Promise.resolve(JSON.parse(cachedData))
+    //     });
+    // } else {
+        const DataPromise = ProductsToDisplay().then(data => {
             localStorage.setItem('featuredProducts', JSON.stringify(data));
             localStorage.setItem('featuredProductsTimestamp', Date.now().toString());
             return data;
         });
         return defer({ products: DataPromise });
-    }
+    // }
 }
 
 export default function FeauteredProductsCrousel({ data }) {
@@ -82,11 +82,11 @@ export default function FeauteredProductsCrousel({ data }) {
                                             return (
                                                 <NavLink key={index} to={`products/${product.id}`}>
                                                     <div className="items-center justify-center border-2 border-text-black-50 h-full p-5 mr-4">
-                                                        <h2 className="text-sm">{product.ProductCompany}</h2>
-                                                        <p className="text-lg h-20 text-blue-800 font-bold">{product.ProductName}</p>
-                                                        <img src={product.ProductImageUrl} alt="" srcSet="" height="10rem" />
+                                                        <h2 className="text-sm">{product.type}</h2>
+                                                        <p className="text-lg h-20 text-blue-800 font-bold">{product.name}</p>
+                                                        <img src={product.imageUrl} alt="" srcSet="" height="10rem" />
                                                         <div className="flex justify-between items-center">
-                                                            <p className="font-bold">${product.ProductPrice}</p>
+                                                            <p className="font-bold">${product.price}</p>
                                                             <svg width="36" height="36" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
                                                                 <rect width="36" height="36" rx="18" fill="#DDE1E8" />
                                                                 <path fillRule="evenodd" clipRule="evenodd" d="M14.6653 14.6667V14.6667H13.4691C13.123 14.6667 12.8345 14.9316 12.8049 15.2765L12.0621 23.9431C12.0287 24.3324 12.3356 24.6667 12.7263 24.6667H23.2738C23.6644 24.6667 23.9714 24.3324 23.938 23.9431L23.1952 15.2765C23.1656 14.9316 22.877 14.6667 22.5309 14.6667H21.3319V14.6667C21.3319 12.8258 19.8395 11.3334 17.9986 11.3334C16.1576 11.3334 14.6653 12.8258 14.6653 14.6667ZM17.9981 12.6668C16.8935 12.6668 15.9981 13.5622 15.9981 14.6667H19.9981C19.9981 13.5622 19.1026 12.6668 17.9981 12.6668ZM17.9969 19.9999C19.8193 19.9999 21.3001 18.5375 21.3298 16.7222C21.3313 16.7039 21.332 16.6854 21.332 16.6667C21.332 16.2985 21.0335 16.0001 20.6654 16.0001C20.2972 16.0001 19.9987 16.2985 19.9987 16.6667H19.9964C19.9963 17.7713 19.1009 18.6667 17.9964 18.6667C16.9098 18.6667 16.0256 17.8002 15.9971 16.7206C15.9985 16.7028 15.9992 16.6848 15.9992 16.6667C15.9992 16.2985 15.7007 16 15.3326 16C14.9644 16 14.6659 16.2985 14.6659 16.6667V16.6667H14.6639V16.6151C14.6637 16.6322 14.6635 16.6494 14.6635 16.6666C14.6635 18.5076 16.1559 19.9999 17.9969 19.9999Z" fill="white" />

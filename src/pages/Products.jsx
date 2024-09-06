@@ -1,13 +1,14 @@
 import React, { useState, Suspense, memo, useEffect } from "react";
 import { useLoaderData, defer, Await, Link, NavLink, useSearchParams } from "react-router-dom";
-import { FeauteredProducts } from "../api";
+import { ProductsToDisplay } from "../api";
+import MobileSideMenu from "../components/Reuseables/MobileSideMenu2";
+import Pagination from "../components/Reuseables/Pagination";
 
 function Products() {
     const loadedDataPromise = useLoaderData();
     const [searchparam, setSearchparam] = useSearchParams();
     const PriceFilterArr = searchparam.get('price') ? searchparam.get('price').split(',') : [];
     const BrandFilterArr = searchparam.get('brand') ? searchparam.get('brand').split(',') : [];
-
     const [isActive, setIsActive] = useState(true);
     const [isSecActive, setIsSecActive] = useState(false);
 
@@ -42,7 +43,7 @@ function Products() {
     }
 
     return (
-        <section className="flex m-3">
+        <section className="flex m-3 w-full">
             <MobileSideMenu paramfunction={setSearchparam} param={searchparam} />
             <main className="flex flex-col gap-3 p-5 w-full">
                 <div className="shadow-sm p-4">
@@ -90,15 +91,17 @@ function Products() {
                         {(RealData) => {
                             return (
                                 <div className={`grid ${isActive ? "lg:grid-cols-3 xs:grid-cols-2" : "grid-cols-1"}  gap-2 xs:h-full`}>
-                                    {RealData.filter(item => { let minPrice = 0; let maxPrice = Number.MAX_SAFE_INTEGER; if (PriceFilterArr.length === 1) { maxPrice = parseInt(PriceFilterArr[PriceFilterArr.length - 1]) } else if (PriceFilterArr.length > 1) { minPrice = parseInt(PriceFilterArr[0]); maxPrice = parseInt(PriceFilterArr[PriceFilterArr.length - 1]) } return item.ProductPrice >= minPrice && item.ProductPrice <= maxPrice && (BrandFilterArr.length > 0 ? BrandFilterArr.includes(item.ProductCompany.toLowerCase()) : true) }).map((item) => {
+                                    {RealData.filter(item => { let minPrice = 0; let maxPrice = Number.MAX_SAFE_INTEGER; if (PriceFilterArr.length === 1) { maxPrice = parseInt(PriceFilterArr[PriceFilterArr.length - 1]) } else if (PriceFilterArr.length > 1) { minPrice = parseInt(PriceFilterArr[0]); maxPrice = parseInt(PriceFilterArr[PriceFilterArr.length - 1]) } return item.price >= minPrice && item.price <= maxPrice && (BrandFilterArr.length > 0 ? BrandFilterArr.includes(item.ProductCompany.toLowerCase()) : true) }).map((item) => {
                                         return (
                                             <div className={`p-4 xs:p-2 border-2 h-full border-gray rounded-lg justify-center ${isActive ? "flex-col" : "flex"}`} key={item.id}>
                                                 {
                                                     isActive ? (<Link to={item.id} state={{ queryParam: `?${searchparam.toString()}` }}>
-                                                        <h1 className="text-blue-400 text-lg h-20 xs:h-30 xs:font-bold xs:text-sm">{item.ProductName}</h1>
-                                                        <img src={item.ProductImageUrl} alt={item.ProductName} />
+                                                        <h1 className="text-black-400 font-bold text-center text-lg xs:h-30 xs:font-bold xs:text-sm uppercase">{item.name}</h1>
+                                                        <div className="rounded-md h-80">
+                                                            <img src={item.imageUrl} alt={item.name} className="object-contain w-full h-full" />
+                                                        </div>
                                                         <div className="flex xs:flex-col items-center justify-between lg:mt-2 xs:mt-0 xs:items-start xs:gap-2">
-                                                            <p className="font-bold text-lg">${item.ProductPrice}</p>
+                                                            <p className="font-bold text-lg">${item.price}</p>
                                                             <div className="flex gap-2">
                                                                 <button className="xs:bg-blue-500 xs:flex xs:items-center xs:rounded-2xl xs:p-1 xs:justify-evenly xs:gap-1">
                                                                     <svg width="26" height="26" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -119,12 +122,14 @@ function Products() {
                                                         </div>
                                                     </Link>) : (
                                                         <NavLink to={item.id} className="flex w-full gap-5">
-                                                            <img src={item.ProductImageUrl} alt={item.ProductName} />
+                                                            <div className="rounded-md h-80">
+                                                                <img src={item.imageUrl} alt={item.name} className="object-contain w-full h-full" />
+                                                            </div>
                                                             <div className="flex flex-col w-full gap-5">
-                                                                <h1 className="text-blue-400 text-2xl font-bold">{item.ProductName}</h1>
+                                                                <h1 className="text-blue-400 text-2xl font-bold">{item.name}</h1>
                                                                 <p>In publishing and graphic design, Lorem ipsum is a placeholder text commonly used to demonstrate the visual form of a document or a typeface without relying on meaningful content.</p>
                                                                 <div className="flex flex-col items-start justify-between mt-2 gap-3">
-                                                                    <p className="font-bold text-3xl">${item.ProductPrice}</p>
+                                                                    <p className="font-bold text-3xl">${item.price}</p>
                                                                     <div className="flex gap-2 w-3/5">
                                                                         <button className="rounded-full p-2 bg-blue-500 w-full flex justify-evenly items-center">
                                                                             <p className="text-white">Add to cart</p>
@@ -167,57 +172,16 @@ function Products() {
     )
 }
 
-
-function Pagination() {
-    const [currentPage, setCurrentPage] = useState(1);
-    const TotalPages = 4;
-    function nextPage() {
-        setCurrentPage(prev => (prev === TotalPages ? prev : prev + 1));
-    }
-    function prevPage() {
-        setCurrentPage(prev => (prev === 1 ? prev : prev - 1));
-    }
-    const Arr = [1, 2, 3, 4];
-    return (
-        <div className="flex items-center gap-2">
-            <button onClick={prevPage}>
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M15.7426 4.2222C15.3521 3.8317 14.7193 3.83136 14.3284 4.2222L7.25736 11.2933C6.86652 11.6841 6.86686 12.317 7.25736 12.7075L14.3284 19.7786C14.5821 20.0322 14.9386 20.1208 15.265 20.0439C15.44 20.0035 15.6059 19.9153 15.7426 19.7786C16.1335 19.3877 16.1331 18.7548 15.7426 18.3643L9.37868 12.0004L15.7426 5.63642C16.1335 5.24557 16.1331 4.6127 15.7426 4.2222Z" fill="#586A84" />
-                </svg>
-            </button>
-            {
-                Arr.map((item) => {
-                    return (
-                        <button onClick={() => (setCurrentPage(item))} key={item} className={`rounded-full cursor-pointer px-4 py-2  ${item === currentPage ? "bg-blue-600 text-white" : "text-black bg-gray-100"}`}>
-                            {item}
-                        </button>
-                    )
-                })
-            }
-            <button onClick={nextPage}>
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M8.25736 19.7777C8.64785 20.1682 9.28073 20.1685 9.67157 19.7777L16.7426 12.7066C17.1335 12.3158 17.1331 11.6829 16.7426 11.2924L9.67157 4.22135C9.41789 3.96767 9.0614 3.8791 8.73503 3.95601C8.55998 3.99641 8.39408 4.08463 8.25736 4.22135C7.86652 4.61219 7.86686 5.24507 8.25736 5.63556L14.6213 11.9995L8.25736 18.3635C7.86652 18.7543 7.86686 19.3872 8.25736 19.7777Z" fill="#586A84" />
-                </svg>
-            </button>
-        </div>
-    )
-}
-// export async function loader() {
-//     const DataPromise = FeauteredProducts();
-//     return defer({ data: DataPromise })
-// }
-
-
 export async function loader() {
     const cachedData = localStorage.getItem('featuredProducts');
     const dataAge = localStorage.getItem('featuredProductsTimestamp');
-    const cacheDuration = 24 * 60 * 60 * 1000;
+    const cacheDuration = 24 * 60;
     if (cachedData && (Date.now() - dataAge) < cacheDuration) {
         return defer({
             data: Promise.resolve(JSON.parse(cachedData))
         });
     } else {
-        const DataPromise = FeauteredProducts().then(data => {
+        const DataPromise = ProductsToDisplay().then(data => {
             localStorage.setItem('featuredProducts', JSON.stringify(data));
             localStorage.setItem('featuredProductsTimestamp', Date.now().toString());
             return data;
@@ -227,197 +191,4 @@ export async function loader() {
 }
 
 
-function MobileSideMenu({ paramfunction, param }) {
-    const [openMenu, setOpenMenu] = useState(false);
-    const [secMenu, setSecMenu] = useState(false);
-    const [thirdMenu, setThirdMenu] = useState(false);
-    const [filter, setFilter] = useState({ price: param.get('price') ? param.get('price').split(",") : [], brand: param.get('brand') ? param.get('brand').split(",") : [] });
-
-    function toggle() {
-        setOpenMenu(!openMenu);
-    }
-
-    function toggle2() {
-        setSecMenu(!secMenu)
-    }
-
-    function toggle3() {
-        setThirdMenu(!thirdMenu)
-    }
-
-    useEffect(() => {
-        const sp = new URLSearchParams(param);
-
-        if (filter.price.length > 0) {
-            sp.set('price', filter.price.join(','));
-        } else {
-            sp.delete('price');
-        }
-        if (filter.brand.length > 0) {
-            sp.set('brand', filter.brand.join(','));
-        } else {
-            sp.delete('brand');
-        }
-        paramfunction(sp);
-    }, [filter]);
-
-
-
-    function handleFilter(firtKey, secValue) {
-        const newFilter = { ...filter };
-        const pricearr = secValue.split(",");
-        let flag = false;
-        pricearr.forEach(price => {
-            if (newFilter.price.includes(price)) {
-                newFilter.price = newFilter.price.filter(value => value !== price);
-                flag = true;
-            }
-        });
-        if (!flag) {
-            newFilter.price = [...newFilter.price, ...pricearr];
-        }
-        setFilter(newFilter);
-    }
-
-
-    function handleBrandFilter(brandName) {
-        const newFilter = { ...filter };
-        if (newFilter.brand.includes(brandName)) {
-            newFilter.brand = newFilter.brand.filter(value => value !== brandName);
-        } else {
-            newFilter.brand = [...newFilter.brand, brandName];
-        }
-        setFilter(newFilter);
-    }
-
-
-
-
-    return (
-        <div className={`bg-gray-300 rounded-xl xs:hidden`}>
-            <div className="p-6 flex flex-col justify-center gap-5">
-                <div className="flex flex-col bg-gray-200 p-3 gap-5 rounded-xl">
-                    <h1 className="font-bold">Categories</h1>
-                    <div className="flex flex-col gap-3">
-                        <div className="flex items-center justify-between">
-                            <p className="font-bold">All (1929)</p>
-                            <svg onClick={toggle} className={`duration-400 ${openMenu ? "rotate-0" : "rotate-180"}`} width="22" height="9" viewBox="0 0 12 7" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <path d="M11.1852 6.49501C11.4455 6.23468 11.4457 5.81276 11.1852 5.5522L6.47113 0.838157C6.21057 0.577596 5.78865 0.577826 5.52832 0.838157L0.814275 5.5522C0.645151 5.72133 0.586111 5.95898 0.637383 6.17656C0.664314 6.29326 0.723124 6.40386 0.814275 6.49501C1.07484 6.75557 1.49675 6.75534 1.75708 6.49501L5.99972 2.25237L10.2424 6.49501C10.5029 6.75557 10.9248 6.75534 11.1852 6.49501Z" fill="#1D232C" />
-                            </svg>
-                        </div>
-                        <div className={`grid transition-all duration-500 ease-out ${!openMenu ? "grid-rows-[0fr]" : "grid-rows-[1fr]"} `}>
-                            <ul className="overflow-hidden">
-                                <li>iMac & MacBook (81)</li>
-                                <li>Gaming Computers (1126)</li>
-                                <li>Laptops & PCs (2390)</li>
-                                <li>Gadgets (511)</li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-                <div className="flex flex-col bg-gray-100 p-3 gap-5 rounded-xl">
-                    <h1 className="font-bold">brands</h1>
-                    <div className="flex flex-col">
-                        <ul className="overflow-hidden">
-                            <li className="flex items-center gap-2">
-                                <button onClick={() => handleBrandFilter("apple")}>
-                                    <input className="h-5 w-5" type="checkbox" checked={filter.brand.includes("apple")} />
-                                </button>
-                                <p>Apple (32)</p>
-                            </li>
-                            <li className="flex items-center gap-2">
-                                <button onClick={() => handleBrandFilter("hp")}>
-                                    <input className="h-5 w-5" type="checkbox" checked={filter.brand.includes("hp")} />
-                                </button>
-                                <p>HP (64)</p>
-                            </li>
-                            <li className="flex items-center gap-2">
-                                <button onClick={() => handleBrandFilter("dell")}>
-                                    <input className="h-5 w-5" type="checkbox" checked={filter.brand.includes("dell")} />
-                                </button>
-                                <p>DELL (21)</p>
-                            </li>
-                        </ul>
-                        <div className={`grid transition-all duration-500 ease-out ${!secMenu ? "grid-rows-[0fr]" : "grid-rows-[1fr]"} `}>
-                            <ul className="inner overflow-hidden">
-                                <li className="flex items-center gap-2">
-                                    <button onClick={() => handleBrandFilter("sony")}>
-                                        <input className="h-5 w-5" type="checkbox" checked={filter.brand.includes("sony")} />
-                                    </button>
-                                    <p>Sony (32)</p>
-                                </li>
-                                <li className="flex items-center gap-2">
-                                    <button onClick={() => handleBrandFilter("lenovo")}>
-                                        <input className="h-5 w-5" type="checkbox" checked={filter.brand.includes("lenovo")} />
-                                    </button>
-                                    <p>Lenovo (64)</p>
-                                </li>
-                                <li className="flex items-center gap-2">
-                                    <button onClick={() => handleBrandFilter("toshiba")}>
-                                        <input className="h-5 w-5" type="checkbox" checked={filter.brand.includes("toshiba")} />
-                                    </button>
-                                    <p>Toshiba (21)</p>
-                                </li>
-
-                            </ul>
-                        </div>
-                        <div className="flex items-center justify-between">
-                            <p className="font-bold">{!secMenu ? "Show more" : "Show less"}</p>
-                            <svg onClick={toggle2} className={`duration - 400 ${secMenu ? "rotate-0" : "rotate-180"} `} width="22" height="9" viewBox="0 0 12 7" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <path d="M11.1852 6.49501C11.4455 6.23468 11.4457 5.81276 11.1852 5.5522L6.47113 0.838157C6.21057 0.577596 5.78865 0.577826 5.52832 0.838157L0.814275 5.5522C0.645151 5.72133 0.586111 5.95898 0.637383 6.17656C0.664314 6.29326 0.723124 6.40386 0.814275 6.49501C1.07484 6.75557 1.49675 6.75534 1.75708 6.49501L5.99972 2.25237L10.2424 6.49501C10.5029 6.75557 10.9248 6.75534 11.1852 6.49501Z" fill="#1D232C" />
-                            </svg>
-                        </div>
-                    </div>
-                </div>
-                <div className="flex flex-col bg-gray-100 p-3 gap-5 rounded-xl">
-                    <h1 className="font-bold">Price</h1>
-                    <div className="flex flex-col">
-                        <ul className="overflow-hidden">
-                            <li className="flex items-center gap-2">
-                                <button onClick={() => handleFilter("price", "50")}>
-                                    <input className="h-5 w-5" type="checkbox" checked={filter.price.includes("50")} />
-                                </button>
-                                <p>&gt;50 (32)</p>
-                            </li>
-                            <li className="flex items-center gap-2">
-                                <button onClick={() => handleFilter("price", "100,200")}>
-                                    <input className="h-5 w-5" type="checkbox" checked={filter.price.includes("100")} />
-                                </button>
-                                <p>100-200 (64)</p>
-                            </li>
-                            <li className="flex items-center gap-2">
-                                <button onClick={() => handleFilter("price", "201,300")}>
-                                    <input className="h-5 w-5" type="checkbox" checked={filter.price.includes("201")} />
-                                </button>
-                                <p>200-300 (21)</p>
-                            </li>
-                        </ul>
-                        <div className={`grid transition-all duration-500 ease-out ${!thirdMenu ? "grid-rows-[0fr]" : "grid-rows-[1fr]"} `}>
-                            <ul className="inner overflow-hidden">
-                                <li className="flex items-center gap-2">
-                                    <button onClick={() => handleFilter("price", "400,500")}>
-                                        <input className="h-5 w-5" type="checkbox" checked={filter.price.includes("400")} />
-                                    </button>
-                                    <p>400-500 (32)</p>
-                                </li>
-                                <li className="flex items-center gap-2">
-                                    <button onClick={() => handleFilter("price", "500,1000")}>
-                                        <input className="h-5 w-5" type="checkbox" checked={filter.price.includes("1000")} />
-                                    </button>
-                                    <p>500-1000 (64)</p>
-                                </li>
-                            </ul>
-                        </div>
-                        <div className="flex items-center justify-between">
-                            <p className="font-bold">{!thirdMenu ? "Show more" : "Show less"}</p>
-                            <svg onClick={toggle3} className={`duration - 400 ${thirdMenu ? "rotate-0" : "rotate-180"} `} width="22" height="9" viewBox="0 0 12 7" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <path d="M11.1852 6.49501C11.4455 6.23468 11.4457 5.81276 11.1852 5.5522L6.47113 0.838157C6.21057 0.577596 5.78865 0.577826 5.52832 0.838157L0.814275 5.5522C0.645151 5.72133 0.586111 5.95898 0.637383 6.17656C0.664314 6.29326 0.723124 6.40386 0.814275 6.49501C1.07484 6.75557 1.49675 6.75534 1.75708 6.49501L5.99972 2.25237L10.2424 6.49501C10.5029 6.75557 10.9248 6.75534 11.1852 6.49501Z" fill="#1D232C" />
-                            </svg>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    );
-}
 export default memo(Products);
