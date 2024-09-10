@@ -2,7 +2,7 @@ import { ProductsToDisplay } from "../../api";
 import React, { useRef, Suspense } from "react";
 import { defer, Await, NavLink } from "react-router-dom";
 import Slider from "react-slick";
-
+import Spinner from "../Reuseables/Spinner";
 // export async function loader() {
 //     const productsPromise = FeauteredProducts();
 //     return defer({ products: productsPromise });
@@ -17,12 +17,12 @@ export async function loader() {
     //         products: Promise.resolve(JSON.parse(cachedData))
     //     });
     // } else {
-        const DataPromise = ProductsToDisplay().then(data => {
-            localStorage.setItem('featuredProducts', JSON.stringify(data));
-            localStorage.setItem('featuredProductsTimestamp', Date.now().toString());
-            return data;
-        });
-        return defer({ products: DataPromise });
+    const DataPromise = ProductsToDisplay().then(data => {
+        localStorage.setItem('featuredProducts', JSON.stringify(data));
+        localStorage.setItem('featuredProductsTimestamp', Date.now().toString());
+        return data;
+    });
+    return defer({ products: DataPromise });
     // }
 }
 
@@ -72,7 +72,7 @@ export default function FeauteredProductsCrousel({ data }) {
                 </div>
             </div>
             <div className="slider-container mt-5 overflow-hidden">
-                <Suspense fallback={<div className="text-center m-auto xs:m-0 text-5xl xs:h-full">Loading...</div>}>
+                <Suspense fallback={<Spinner />}>
                     <Await resolve={data.products}>
                         {
                             (RealData) => {

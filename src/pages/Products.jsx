@@ -3,6 +3,7 @@ import { useLoaderData, defer, Await, Link, NavLink, useSearchParams } from "rea
 import { ProductsToDisplay } from "../api";
 import MobileSideMenu from "../components/Reuseables/MobileSideMenu2";
 import Pagination from "../components/Reuseables/Pagination";
+import Spinner from "../components/Reuseables/Spinner";
 
 function Products() {
     const loadedDataPromise = useLoaderData();
@@ -86,7 +87,7 @@ function Products() {
                     </div>
                 </div>
 
-                <Suspense fallback={<div className="text-center m-auto xs:m-0 text-5xl xs:h-full">Loading...</div>}>
+                <Suspense fallback={<Spinner />}>
                     <Await resolve={loadedDataPromise.data}>
                         {(RealData) => {
                             return (

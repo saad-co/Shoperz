@@ -2,6 +2,7 @@ import { FeauteredProducts } from "../../api";
 import React, { useRef, Suspense } from "react";
 import { defer, Await, NavLink } from "react-router-dom";
 import Slider from "react-slick";
+import Spinner from "../Reuseables/Spinner";
 
 export function loader() {
     const productsPromise = FeauteredProducts();
@@ -54,13 +55,13 @@ export default function BigDeals({ data }) {
             </div>
             <div className="slider-container mt-5 overflow-hidden">
                 {
-                    <Suspense fallback={<div className="text-center m-auto xs:m-0 text-5xl xs:h-full">Loading...</div>}>
+                    <Suspense fallback={<Spinner />}>
                         <Await resolve={data.products}>
                             {
                                 (Resolveddata) => {
                                     return <Slider ref={sliderRef} {...settings}>
                                         {
-                                            Resolveddata.map((product,index) => {
+                                            Resolveddata.map((product, index) => {
                                                 return (
                                                     <NavLink key={index} to={`products/${product.id}`}>
                                                         <div className="items-center justify-center border-2 border-text-black-50 h-full p-5 mr-4">

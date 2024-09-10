@@ -3,6 +3,7 @@ import React from 'react';
 import { Navigate, useLoaderData } from "react-router-dom";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { auth } from "./firebaseConfig";
+import Spinner from './components/Reuseables/Spinner';
 
 export function loader({ request }) {
     const pathname = new URL(request.url).pathname;
@@ -17,7 +18,7 @@ const PrivateRoute = ({ children }) => {
     if (loading) {
         return (
             <div className="flex justify-center items-center h-screen">
-                <div className="text-4xl font-bold">Loading...</div>
+                <Spinner />
             </div>
         );
     }

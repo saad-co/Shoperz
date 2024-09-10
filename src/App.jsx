@@ -11,7 +11,7 @@ import ContactUs from "./pages/ContactUs";
 import PrivateRoute, { loader as privateLoader } from "./PrivateRoute";
 import ResetPassword, { action as ResetAction } from "./pages/ResetPassword";
 import NotFound from "./pages/404";
-import CreateProduct, { action as ProductAdditionAction } from "./pages/Admin/CreateProduct";
+import CreateProduct from "./pages/Admin/CreateProduct";
 import AdminHome from "./pages/Admin/AdminHome";
 import AdminProducts from "./pages/Admin/AdminProducts";
 import EditProduct from "./pages/Admin/EditProducts";
@@ -56,7 +56,6 @@ function App() {
               <CreateProduct />
             </PrivateRoute>
           }
-          action={ProductAdditionAction}
         >
         </Route>
         <Route
